@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: magic-ip-assigner
+  labels:
+    app: magic-ip-assigner
+spec:
+  selector:
+    matchLabels:
+       app: magic-ip-assigner
+  template:
+    metadata:
+      name: magic-ip-assigner
+      labels:
+        app: magic-ip-assigner
+    spec:
+      hostNetwork: true
+      containers:
+        - name: magic-ip-assigner
+          image: stevenacoffman/kube-magic-ip-assigner:0.9.0-1.10.0@sha256:81af49e37910bb1b935b50de827b0b4208b4ec8c98f9fbd4897e085a6eba749a
+          securityContext:
+            privileged: true
+            capabilities:
+              add: [NET_ADMIN]
+          env:
+          - name: PORT
+            value: "80"
+          - name: TARGET
+            value: "80"
+          - name: SELECTOR
+            value: "app=aws-mock"
+          - name: PROTOCOL
+            value: tcp
+          - name: MAGIC_IP
+            value: 169.254.169.254
+          - name: HOST_INTERFACE
+            value: docker0
+          - name: VERBOSE
+            value: "1"
+          - name: NAMESPACE
+            value: "default"
+          - name: NODE_NAME
+            value: "minikube"

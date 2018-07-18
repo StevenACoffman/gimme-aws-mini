@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: aws-mock
+  labels:
+    app: aws-mock
+spec:
+  selector:
+    matchLabels:
+      app: aws-mock
+  template:
+    metadata:
+      name: aws-mock
+      labels:
+        app: aws-mock
+    spec:
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: aws-configuration
+      containers:
+        - name: fake-ec2-metadata-service
+          image: bpholt/fake-ec2-metadata-service:latest
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          env:
+          - name: BIND_ADDR
+            value: 0.0.0.0
+          - name: LOCAL_ADDR
+            value: 172.28.159.34
+          volumeMounts:
+          - mountPath: /opt/aws
+            readOnly: true
+            name: secret-volume

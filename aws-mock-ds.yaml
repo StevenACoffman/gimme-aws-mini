@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: aws-mock
+  labels:
+    app: aws-mock
+spec:
+  selector:
+    matchLabels:
+      app: aws-mock
+  template:
+    metadata:
+      name: aws-mock
+      labels:
+        app: aws-mock
+    spec:
+      containers:
+      - image: jtblin/aws-mock-metadata
+        imagePullPolicy: Always
+        name: aws-mock
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        env:
+        - name: AVAILABILITY_ZONE
+          value: "us-east-1d"
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-creds
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-creds
+              key: AWS_SECRET_ACCESS_KEY
+        args:
+          - "--availability-zone=us-east-1d"
+          - "--instance-id=i-0a148cec064fc841c"
+          - "--app-port=80"
+          - "--vpc-id=REPLACE_ME_WITH_VPC_ID"
+          - "--private-ip=172.28.159.34"
+          - "--role-name=REPLACE_ME_WITH_ROLE_NAME"
+          - "--role-arn=REPLACE_ME_WITH_ROLE_ARN"

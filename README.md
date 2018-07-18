@@ -1,4 +1,4 @@
-# Gimme AWS mini
+# Gimme AWS Mini
 
 The [ec2 instance metadata service](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html)
 runs on each ec2 instance and provide an api to retrieve information about the running instance as well as getting credentials based on the IAM role.
@@ -28,19 +28,35 @@ The [aws-mock-metadata](https://github.com/jtblin/aws-mock-metadata) will use *y
 
 It also provides additional features like being able to return an instance id, availability zone, etc.
 
-If you need to STS assume a particular role, then this one is the one to use! **NOTE**: You will need to modify the manifest for your VPC, role, etc. This expects your environment variable AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to be set.
+If you need to STS assume a particular role, then this one is the one to use!
+
+**NOTE**: You will need to modify this manifest for your VPC, role, etc. This expects your environment variable `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to be set.
 
 ### <a name="fake-ec2-metadata-service">Fake EC2 Metadata Service</a>
 
-The [Fake EC2 Metadata Service](https://github.com/bpholt/fake-ec2-metadata-service), is a simple Sinatra app that exposes some of the ec2 metadata service functionality. If you want your app to just run with your own credentials, then it should be fine.
+The [Fake EC2 Metadata Service](https://github.com/bpholt/fake-ec2-metadata-service), is a simple Sinatra app that exposes some of the ec2 metadata service functionality. If you want your app to just run with your own credentials, then it should be fine. Requires no modification.
 
-**NOTE**: Expects $HOME/.aws/config and $HOME/.aws/credentials
+**NOTE**: Expects `$HOME/.aws/config` and `$HOME/.aws/credentials`
+
+### Does it work outside minikube like on baremetal?
+Sure! Kinda! You just need to pick a more appropriate host interface, like `cni0`, or `cbr0`, or whatever you are using. Good luck!
 
 ### A note on minikube iptables
 
 From [Miek Gieben @miekg](https://twitter.com/miekg/status/1011585886654550016/photo/1)
 
-<img height="100" src="./images/iptables.jpg" />
+<img width="717" height="720" src="./images/iptables.jpg" />
 
-### Does it work outside minikube like on baremetal?
-Sure! Kinda! You just need to pick a more appropriate host interface, like `cni0`, or `cbr0`, or whatever you are using. Good luck!
+## Example Requests
+
+From a container inside your minikube, run these to test:
+
+```
+curl http://169.254.169.254/latest/meta-data/local-ipv4
+curl http://169.254.169.254/latest/meta-data/local-hostname
+curl http://169.254.169.254/latest/meta-data/iam/security-credentials/
+curl http://169.254.169.254/latest/meta-data/iam/security-credentials/default
+```
+
+I have my own private image that I run like this:
+`kubectl run --command --rm  -i --tty $(whoami) --image=$AWSCLIIMAGE --restart=Never -- /bin/bash`

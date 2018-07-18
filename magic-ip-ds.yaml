@@ -18,7 +18,7 @@ spec:
       hostNetwork: true
       containers:
         - name: magic-ip-assigner
-          image: stevenacoffman/kube-magic-ip-assigner:0.9.0-1.10.0@sha256:81af49e37910bb1b935b50de827b0b4208b4ec8c98f9fbd4897e085a6eba749a
+          image: mumoshu/kube-magic-ip-assigner:0.9.0-1.9.8
           securityContext:
             privileged: true
             capabilities:
